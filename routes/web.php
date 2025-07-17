@@ -18,6 +18,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\JadwalKontenController;
 use App\Http\Controllers\FileKontenController;
 use App\Http\Controllers\AnalisisJadwalController;
+use App\Http\Controllers\NotificationController;
 
 
 /*
@@ -38,6 +39,9 @@ Route::get('/', function () {
 Auth::routes();
 
 
+Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+
+
 
 Route::resource('/kategoris', KategoriController::class);
 Route::resource('/jadwal_kontens', JadwalKontenController::class);
@@ -45,8 +49,9 @@ Route::resource('/file_kontens', FileKontenController::class);
 Route::resource('/analisis_jadwals', AnalisisJadwalController::class);
 Route::patch('/jadwal_kontens/{id}/status', [JadwalKontenController::class, 'updateStatus'])->name('jadwal_kontens.updateStatus');
 Route::patch('analisis_jadwals/{id}/update-status', [AnalisisJadwalController::class, 'updateStatus'])->name('analisis_jadwals.updateStatus');
+Route::get('/kalender-jadwal', [App\Http\Controllers\JadwalKontenController::class, 'kalender'])->name('jadwal_kontens.kalender');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', [DashboardController::class,'index']);
 
 //Route input Data Create Read Update Delete @resource
@@ -78,7 +83,7 @@ Route::get('/cetakrekap' ,[KeuanganController::class,'cetakRekap']);
 
 Route::resource('/blog' ,BlogController::class);
 Route::resource('/akun' ,AkunController::class);
-Route::get('/',[JadwalKontenController::class,'welcome']);
+// Route::get('/',[JadwalKontenController::class,'welcome']);
 
 
 Route::resource('/gallery', GalleryController::class);

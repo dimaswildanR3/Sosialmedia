@@ -18,68 +18,90 @@
                     <form method="POST" action="/akun/{{$akun->id}}">
                         @csrf
                         @method('patch')
+
+                        <!-- Nama -->
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Nama') }}</label>
+                            <label for="name" class="col-md-4 col-form-label text-md-right">Nama</label>
 
                             <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ $akun->name }}" required autocomplete="name" autofocus>
+                                <input id="name" type="text" 
+                                    class="form-control @error('name') is-invalid @enderror" 
+                                    name="name" value="{{ old('name', $akun->name) }}" required autofocus>
 
                                 @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Email -->
                         <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Email') }}</label>
+                            <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $akun->email }}" required autocomplete="email">
+                                <input id="email" type="email" 
+                                    class="form-control @error('email') is-invalid @enderror" 
+                                    name="email" value="{{ old('email', $akun->email) }}" required>
 
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Password Baru (opsional) -->
                         <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password Baru') }}</label>
+                            <label for="password" class="col-md-4 col-form-label text-md-right">Password Baru (kosongkan jika tidak ingin diubah)</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                                <input id="password" type="password" 
+                                    class="form-control @error('password') is-invalid @enderror" 
+                                    name="password" autocomplete="new-password">
 
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror
                             </div>
                         </div>
 
+                        <!-- Konfirmasi Password Baru -->
                         <div class="form-group row">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Konfirmasi Password Baru') }}</label>
+                            <label for="password-confirm" class="col-md-4 col-form-label text-md-right">Konfirmasi Password Baru</label>
 
                             <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" autocomplete="new-password">
                             </div>
                         </div>
 
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Simpan') }}
-                                </button>
+                        <!-- Role -->
+                        <div class="form-group row">
+                            <label for="role" class="col-md-4 col-form-label text-md-right">Role</label>
+
+                            <div class="col-md-6">
+                                <select id="role" name="role" class="form-control @error('role') is-invalid @enderror" required>
+                                    <option value="">-- Pilih Role --</option>
+                                    <option value="user" {{ old('role', $akun->role) == 'user' ? 'selected' : '' }}>User</option>
+                                    <option value="admin" {{ old('role', $akun->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="kader" {{ old('role', $akun->role) == 'kader' ? 'selected' : '' }}>Kader</option>
+                                </select>
+
+                                @error('role')
+                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                @enderror
                             </div>
                         </div>
+
+                        <!-- Submit -->
+                        <div class="form-group row mb-0">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection

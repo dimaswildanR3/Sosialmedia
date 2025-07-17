@@ -76,8 +76,32 @@
                     </form>
                 </div>
             </li>
+
+            @php
+    $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
+@endphp
+<li class="nav-item dropdown">
+    <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
+        <i class="fas fa-bell"></i>
+        @if($notifs->count() > 0)
+            <span class="notif-badge">{{ $notifs->count() }}</span>
+        @endif
+    </a>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
+        <h6 class="dropdown-header">Notifikasi</h6>
+        @forelse ($notifs as $notif)
+            <a href="#" class="dropdown-item small text-wrap">{{ $notif->message }}</a>
+        @empty
+            <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
+        @endforelse
+        <div class="dropdown-divider"></div>
+        <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
+    </div>
+</li>
+
           </ul>
         </div>
+        
       </div>
       </nav>
 
@@ -95,6 +119,8 @@
      
         <a href="/kategoris"><i class="fas fa-balance-scale"></i><span>Kategori</span></a>
         <a href="/jadwal_kontens"><i class="fas fa-balance-scale"></i><span>Jadwal Konten</span><a>
+        <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
+
         <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
         <a href="/analisis_jadwals"><i class="fas fa-balance-scale"></i><span>Analisis Jadwals<span></a>
         <!-- <a class="dropdown-btn"><i class="fas fa-university"></i><span>Data Keuangan</span></a> -->
@@ -122,6 +148,8 @@
 
       <a href="/kategoris"><i class="fas fa-balance-scale"></i><span>Kategori</span></a>
         <a href="/jadwal_kontens"><i class="fas fa-balance-scale"></i><span>Jadwal Konten</span><a>
+        <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
+
         <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
         <a href="/analisis_jadwals"><i class="fas fa-balance-scale"></i><span>Analisis Jadwals<span></a>
         

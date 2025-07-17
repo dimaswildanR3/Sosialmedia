@@ -4,7 +4,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/dashboard" style="color: #fd6bc5">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Data Kategori</li>
+        <li class="breadcrumb-item active" aria-current="page">Data Jenis Postingan</li>
     </ol>
 </nav>
 
@@ -21,7 +21,8 @@
         <thead style="background: #fd6bc5; color: white;">
             <tr>
                 <th>No</th>
-                <th>Kategori</th>
+                <th>Jenis Postingan</th>
+                <th>Warna</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -30,6 +31,16 @@
             <tr>
             <td>{{ $key + $kategoris->firstItem() }}</td>
                 <td>{{ $kategori->nama_kategori }}</td>
+                <td>
+                @if($kategori->warna)
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 20px; height: 20px; background-color: {{ $kategori->warna }}; border: 1px solid #ccc;"></div>
+                        <span>{{ $kategori->warna }}</span>
+                    </div>
+                @else
+                    <em>Tidak ada</em>
+                @endif
+            </td>
                 <td>
                     <a href="{{ route('kategoris.edit', $kategori->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                     <form action="{{ route('kategoris.destroy', $kategori->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">

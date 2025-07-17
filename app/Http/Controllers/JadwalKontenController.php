@@ -6,6 +6,7 @@ use App\Models\JadwalKonten;
 use App\Models\Kategori;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class JadwalKontenController extends Controller
 {
@@ -41,6 +42,10 @@ class JadwalKontenController extends Controller
     
         // Simpan ke database
         JadwalKonten::create($validated);
+        Notification::create([
+            'user_id' => $request->user_id,
+            'message' => 'Konten "' . $request->judul_konten . '" telah dijadwalkan.',
+        ]);
     
         return redirect()->route('jadwal_kontens.index')->with('success', 'Jadwal konten berhasil dibuat');
     }
@@ -71,7 +76,10 @@ class JadwalKontenController extends Controller
         ]);
 
         $jadwal->update($validated);
-
+        Notification::create([
+            'user_id' => $request->user_id,
+            'message' => 'Konten "' . $request->judul_konten . '" telah dijadwalkan.',
+        ]);
         return redirect()->route('jadwal_kontens.index')->with('success', 'Jadwal konten berhasil diperbarui');
     }
 
@@ -108,6 +116,21 @@ public function welcome()
 }
 
 
+public function kalender(Request $request)
+{
+    $bulan = $request->get('bulan') ?? date('m');
+    $tahun = $request->get('tahun') ?? date('Y');
+
+    $startOfMonth = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth();
+    $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+    $jadwals = JadwalKonten::with('kategori')
+        ->whereBetween('tanggal_publikasi', [$startOfMonth, $endOfMonth])
+        ->get()
+        ->groupBy(fn ($item) => Carbon::parse($item->tanggal_publikasi)->format('Y-m-d'));
+
+    return view('jadwal_kontens.kalender', compact('jadwals', 'startOfMonth', 'bulan', 'tahun'));
+}
 
 
 }

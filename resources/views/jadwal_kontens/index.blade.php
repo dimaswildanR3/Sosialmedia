@@ -4,7 +4,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="/dashboard" style="color: #fd6bc5">Dashboard</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Data Bidan</li>
+        <li class="breadcrumb-item active" aria-current="page">Jadwal Konten</li>
     </ol>
 </nav>
 

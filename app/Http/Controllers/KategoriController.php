@@ -19,14 +19,18 @@ class KategoriController extends Controller
     }
 
     public function store(Request $request)
-    { $request->validate([
-       
-            'nama_kategori' => 'required|unique:kategoris,nama_kategori'
+    {
+        $request->validate([
+            'nama_kategori' => 'required|unique:kategoris,nama_kategori',
+            'warna' => 'nullable|string' // tambahkan validasi warna
         ]);
 
-        Kategori::create($request->all());
+        Kategori::create([
+            'nama_kategori' => $request->nama_kategori,
+            'warna' => $request->warna,
+        ]);
 
-        return redirect()->route('kategoris.index')->with('status', 'Kategori berhasil ditambahkan');
+        return redirect()->route('kategoris.index')->with('status', 'Jenis Postingan berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -40,12 +44,16 @@ class KategoriController extends Controller
         $kategori = Kategori::findOrFail($id);
 
         $request->validate([
-            'nama_kategori' => 'required|unique:kategoris,nama_kategori,' . $kategori->id
+            'nama_kategori' => 'required|unique:kategoris,nama_kategori,' . $kategori->id,
+            'warna' => 'nullable|string|max:20'
         ]);
 
-        $kategori->update($request->all());
+        $kategori->update([
+            'nama_kategori' => $request->nama_kategori,
+            'warna' => $request->warna,
+        ]);
 
-        return redirect()->route('kategoris.index')->with('status', 'Kategori berhasil diperbarui');
+        return redirect()->route('kategoris.index')->with('status', 'Jenis Postingan berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -53,6 +61,6 @@ class KategoriController extends Controller
         $kategori = Kategori::findOrFail($id);
         $kategori->delete();
 
-        return redirect()->route('kategoris.index')->with('status', 'Kategori berhasil dihapus');
+        return redirect()->route('kategoris.index')->with('status', 'Jenis Postingan berhasil dihapus');
     }
 }
