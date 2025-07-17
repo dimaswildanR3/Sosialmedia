@@ -53,8 +53,9 @@
 
         <div class="form-group mb-3">
             <label for="tanggal_publikasi">Tanggal Publikasi</label>
-            <input type="date" name="tanggal_publikasi" class="form-control @error('tanggal_publikasi') is-invalid @enderror"
-    value="{{ old('tanggal_publikasi', \Carbon\Carbon::parse($jadwal->tanggal_publikasi)->format('Y-m-d')) }}">
+            <input type="datetime-local" name="tanggal_publikasi" class="form-control @error('tanggal_publikasi') is-invalid @enderror"
+value="{{ old('tanggal_publikasi', \Carbon\Carbon::parse($jadwal->tanggal_publikasi)->format('Y-m-d\TH:i')) }}">
+
 
             @error('tanggal_publikasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
@@ -73,8 +74,9 @@
     document.addEventListener("DOMContentLoaded", function () {
         const tanggalInput = document.querySelector('input[name="tanggal_publikasi"]');
         const today = new Date().toISOString().split('T')[0];
-        tanggalInput.setAttribute('min', today);
+        tanggalInput.setAttribute('min', today); // membatasi tanggal sebelum hari ini
     });
 </script>
+
 
 @endsection

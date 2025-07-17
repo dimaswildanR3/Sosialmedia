@@ -49,11 +49,12 @@
             @error('kategori_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="tanggal_publikasi">Tanggal Publikasi</label>
-            <input type="date" name="tanggal_publikasi" class="form-control @error('tanggal_publikasi') is-invalid @enderror" value="{{ old('tanggal_publikasi') }}">
-            @error('tanggal_publikasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
+<div class="form-group mb-3">
+    <label for="tanggal_publikasi">Tanggal & Waktu Publikasi</label>
+    <input type="datetime-local" name="tanggal_publikasi" class="form-control @error('tanggal_publikasi') is-invalid @enderror" value="{{ old('tanggal_publikasi') }}">
+    @error('tanggal_publikasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
+</div>
+
 
         <div class="form-group mb-3">
             <label for="platform">Platform</label>
@@ -71,10 +72,18 @@
 
 {{-- JavaScript untuk validasi tanggal --}}
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const tanggalInput = document.querySelector('input[name="tanggal_publikasi"]');
-        const today = new Date().toISOString().split('T')[0];
-        tanggalInput.setAttribute('min', today);
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    const tanggalInput = document.querySelector('input[name="tanggal_publikasi"]');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    tanggalInput.min = minDateTime;
+});
+
 </script>
 @endsection

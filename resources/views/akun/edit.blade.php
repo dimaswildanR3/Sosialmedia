@@ -82,7 +82,6 @@
                                     <option value="">-- Pilih Role --</option>
                                     <option value="user" {{ old('role', $akun->role) == 'user' ? 'selected' : '' }}>User</option>
                                     <option value="admin" {{ old('role', $akun->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="kader" {{ old('role', $akun->role) == 'kader' ? 'selected' : '' }}>Kader</option>
                                 </select>
 
                                 @error('role')

@@ -19,6 +19,8 @@ use App\Http\Controllers\JadwalKontenController;
 use App\Http\Controllers\FileKontenController;
 use App\Http\Controllers\AnalisisJadwalController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\LaporanJadwalKontenController;
+use App\Http\Controllers\ProfileController;
 
 
 /*
@@ -57,7 +59,18 @@ Route::patch('analisis_jadwals/{id}/update-status', [AnalisisJadwalController::c
 Route::get('/kalender-jadwal', [App\Http\Controllers\JadwalKontenController::class, 'kalender'])->name('jadwal_kontens.kalender');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/dashboard', [DashboardController::class,'index']);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+
+Route::get('/laporan/jadwal-konten', [LaporanJadwalKontenController::class, 'showForm'])->name('laporan.jadwal.view');
+Route::get('/laporan/jadwal-konten/export', [LaporanJadwalKontenController::class, 'exportExcel'])->name('laporan.jadwal.export');
+
 
 //Route input Data Create Read Update Delete @resource
 Route::resource('/balita' ,BalitaController::class);

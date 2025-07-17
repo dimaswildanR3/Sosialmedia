@@ -59,9 +59,9 @@
   <body>
       <input type="checkbox" id="check">
       <nav class="navbar navbar-expand-lg navbar-dark bg-secondary" {{--style="background: #ff7ec9"--}}>
-        <div class="container">
-       <a href="/dashboard" class="navbar-brand" style="font-weight: bold; font-size: 1.5rem; color: #fd6bc5;">
-    <i class="fas fa-share-alt" style="margin-right: 8px;"></i> Sosial Media
+        <div class="container-fluid">
+       <a href="/dashboard" class="navbar-brand" style="font-weight: bold; font-size: 1.5rem; color: #fd6bc5;margin-left: 30px;">
+    <i class="fas fa-share-alt" ></i> Sosial Media
 </a>
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,8 +78,13 @@
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white"><i class="fas fa-user" style="color: white"></i>
                     {{ Auth::user()->name }}
                 </a>
+                
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                     <!--<a class="dropdown-item" href="{{ route('logout') }}">Profil</a>-->
+                    
+    <a class="dropdown-item" href="{{ route('profile.show') }}">
+        {{ __('Profil Saya') }}
+    </a>
                     <a class="dropdown-item" href="{{ route('logout') }}"
                     onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     {{ __('Log Out') }}
@@ -139,7 +144,7 @@
         <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
 
         <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
-        <a href="/analisis_jadwals"><i class="fas fa-balance-scale"></i><span>Analisis Jadwals<span></a>
+        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporanp</span></a>
         <!-- <a class="dropdown-btn"><i class="fas fa-university"></i><span>Data Keuangan</span></a> -->
         <!-- <div class="dropdown-container">
           <a href="/kasmasuk"><i class="fas fa-plus-square"></i><span>Kas Masuk</span></a>
@@ -168,7 +173,7 @@
         <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
 
         <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
-        <a href="/analisis_jadwals"><i class="fas fa-balance-scale"></i><span>Analisis Jadwals<span></a>
+        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
         
       <!-- <a class="dropdown-btn" style="cursor: pointer;"><i class="fas fa-university"></i><span>Data Keuangan</span></a> -->
       <div class="dropdown-container">
@@ -180,7 +185,7 @@
         <a href="#">Link 3</a> --}}
       </div>
       <!-- <a href="/blog"><i class="fas fa-calendar"></i><span>Data Jadwal Bidan</span></a> -->
-      <a href="/akun"><i class="fas fa-user"></i><span>Kader</span></a>
+      <a href="/akun"><i class="fas fa-user"></i><span>Pengguna</span></a>
    
     </div>
     <!--sidebar end-->

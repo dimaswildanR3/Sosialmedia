@@ -85,7 +85,6 @@
                                     <option  value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                                     <!-- <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option> -->
                                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    <option value="kader" {{ old('role') == 'kader' ? 'selected' : '' }}>Kader</option>
                                 </select>
 
                                 @error('role')

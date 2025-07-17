@@ -20,7 +20,7 @@
 <div class="card border-left-primary shadow p-3 mb-5 bg-white rounded">
     <div class="d-flex justify-content-lg-end mb-3">
         <a class="btn btn-outline-secondary" href="/akun/create">
-            <i class="fas fa-plus"></i> Tambah Data Kader
+            <i class="fas fa-plus"></i> Tambah Data Pengguna
         </a>
     </div>
     <div class="table-responsive">
