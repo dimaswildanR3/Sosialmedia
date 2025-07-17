@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalKonten;
 use App\Models\Kategori;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
