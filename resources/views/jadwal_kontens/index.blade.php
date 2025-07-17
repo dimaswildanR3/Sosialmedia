@@ -8,80 +8,94 @@
     </ol>
 </nav>
 
-@if(session('status'))
-<div class="alert alert-success">{{ session('status') }}</div>
+@if(session('success'))
+<div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 <div class="card shadow p-3 mb-5 bg-white rounded">
     <div class="d-flex justify-content-end mb-3">
-        <a href="{{ route('jadwal_kontens.create') }}" class="btn btn-outline-secondary"><i class="fas fa-plus"></i> Tambah Data</a>
+        <a href="{{ route('jadwal_kontens.create') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-plus"></i> Tambah Jadwal
+        </a>
     </div>
 
     <table class="table table-hover">
         <thead style="background: #fd6bc5; color: white;">
         <tr>
-            <th>ID</th>
-            <th>Judul</th>
+            <th>No</th>
             <th>User</th>
             <th>Kategori</th>
-            <th>Tanggal Publikasi</th>
+            <th>Judul</th>
+            <th>Tanggal Postingan</th>
+            <th>Caption</th>
             <th>Waktu Dibuat</th>
             <th>Status</th>
             <th>Aksi</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($jadwals as $key => $jadwal)
+        @forelse($jadwals as $key => $jadwal)
             <tr>
-            <td>{{ $key + $jadwals->firstItem() }}</td>
-            <td>{{ $jadwal->judul_konten }}</td>
-            <td>{{ $jadwal->user->name ?? '-' }}</td>
-            <td>{{ $jadwal->kategori->nama_kategori ?? '-' }}</td>
-            <td>{{ $jadwal->tanggal_publikasi }}</td>
-            <td>{{ $jadwal->waktu_di_buat }}</td>
-            <td>
-    @php
-        $badgeClass = [
-            'scheduled' => 'warning',
-            'published' => 'success',
-            'failed' => 'danger'
-        ][$jadwal->status] ?? 'secondary';
-    @endphp
+                <td>{{ $key + $jadwals->firstItem() }}</td>
+                <td>{{ $jadwal->user->name ?? '-' }}</td>
+                <td>{{ $jadwal->kategori->nama_kategori ?? '-' }}</td>
+                <td>{{ $jadwal->judul_konten }}</td>
+                
+                <!-- ✅ Format tanggal & waktu postingan -->
+                <td>{{ \Carbon\Carbon::parse($jadwal->tanggal_postingan)->format('d-m-Y H:i') }}</td>
 
-    <span class="badge bg-{{ $badgeClass }}">
-        {{ ucfirst($jadwal->status) }}
-    </span>
-</td>
+                <td>{{ Str::limit($jadwal->caption, 30) }}</td>
 
+                <!-- ✅ Jika 'waktu_dibuat' adalah created_at -->
+                <td>{{ \Carbon\Carbon::parse($jadwal->created_at)->format('d-m-Y H:i') }}</td>
 
-            <td>
-    <a href="{{ route('jadwal_kontens.edit', $jadwal->id) }}" class="btn btn-primary btn-sm">
-        <i class="fas fa-edit"></i>
-    </a>
+                <td>
+                    @php
+                        $badgeClass = [
+                            'scheduled' => 'warning',
+                            'published' => 'success',
+                            'failed' => 'danger'
+                        ][$jadwal->status] ?? 'secondary';
+                    @endphp
+                    <span class="badge bg-{{ $badgeClass }}">
+                        {{ ucfirst($jadwal->status) }}
+                    </span>
+                </td>
+                <td>
+                    <!-- Tombol Edit -->
+                    <a href="{{ route('jadwal_kontens.edit', $jadwal->id) }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
 
-    <form action="{{ route('jadwal_kontens.destroy', $jadwal->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-        @csrf
-        @method('DELETE')
-        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
-    </form>
+                    <!-- Tombol Hapus -->
+                    <form action="{{ route('jadwal_kontens.destroy', $jadwal->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                    </form>
 
-    {{-- Tambah: Form untuk ubah status --}}
-    <form action="{{ route('jadwal_kontens.updateStatus', $jadwal->id) }}" method="POST" class="d-inline">
-        @csrf
-        @method('PATCH')
-        <select name="status" onchange="this.form.submit()" class="form-select form-select-sm d-inline w-auto">
-            <option value="scheduled" {{ $jadwal->status == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-            <option value="published" {{ $jadwal->status == 'published' ? 'selected' : '' }}>Published</option>
-            <option value="failed" {{ $jadwal->status == 'failed' ? 'selected' : '' }}>Failed</option>
-        </select>
-    </form>
-</td>
-
+                    <!-- Dropdown Status -->
+                    <form action="{{ route('jadwal_kontens.updateStatus', $jadwal->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PATCH')
+                        <select name="status" onchange="this.form.submit()" class="form-select form-select-sm d-inline w-auto">
+                            <option value="scheduled" {{ $jadwal->status == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                            <option value="published" {{ $jadwal->status == 'published' ? 'selected' : '' }}>Published</option>
+                            <option value="failed" {{ $jadwal->status == 'failed' ? 'selected' : '' }}>Failed</option>
+                        </select>
+                    </form>
+                </td>
             </tr>
-            @endforeach
+        @empty
+            <tr>
+                <td colspan="9" class="text-center">Tidak ada data jadwal konten</td>
+            </tr>
+        @endforelse
         </tbody>
     </table>
 
-    {{ $jadwals->links() }}
+    <div class="d-flex justify-content-center">
+        {{ $jadwals->links() }}
+    </div>
 </div>
 @endsection

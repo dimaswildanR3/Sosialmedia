@@ -1,33 +1,51 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\JadwalKonten;
 
-public function exportExcel()
+public function exportExcel(Request $request)
 {
-    // Ambil semua data dengan relasi kategori
-    $jadwals = JadwalKonten::with('kategori')->get();
+    // Ambil parameter filter tanggal
+    $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : null;
+    $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : null;
 
-    // Rekap per bulan
+    // Query dengan relasi kategori & user
+    $query = JadwalKonten::with(['kategori', 'user']);
+
+    if ($startDate && $endDate) {
+        $query->whereBetween('tanggal_postingan', [$startDate, $endDate]);
+    } elseif ($startDate) {
+        $query->whereDate('tanggal_postingan', '>=', $startDate);
+    } elseif ($endDate) {
+        $query->whereDate('tanggal_postingan', '<=', $endDate);
+    }
+
+    $jadwals = $query->orderBy('tanggal_postingan', 'asc')->get();
+
+    // Rekap per bulan berdasarkan tanggal_postingan
     $byMonth = $jadwals->groupBy(function ($item) {
-        return Carbon::parse($item->tanggal_publikasi)->format('Y-m');
+        return Carbon::parse($item->tanggal_postingan)->translatedFormat('F Y'); // ex: Januari 2025
     })->map->count();
 
-    // Susun array data
+    // Susun array data untuk Excel
     $data = [];
 
     // Header data utama
-    $data[] = ['Judul', 'Kategori', 'Tanggal Publikasi', 'Status', 'Platform'];
+    $data[] = ['Judul Konten', 'Kategori', 'User', 'Tanggal Postingan', 'Caption', 'Akun Ditandai', 'Hashtag', 'Status'];
 
     // Data utama konten
     foreach ($jadwals as $jadwal) {
         $data[] = [
             $jadwal->judul_konten,
             $jadwal->kategori->nama_kategori ?? '-',
-            $jadwal->tanggal_publikasi,
+            $jadwal->user->name ?? '-',
+            Carbon::parse($jadwal->tanggal_postingan)->format('d-m-Y H:i'),
+            $jadwal->caption,
+            $jadwal->akun_ditandai ?? '-',
+            $jadwal->hastag ?? '-',
             ucfirst($jadwal->status),
-            $jadwal->platform ?? '-',
         ];
     }
 

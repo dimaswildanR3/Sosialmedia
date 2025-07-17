@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\JadwalKontenController;
 use App\Http\Controllers\FileKontenController;
-use App\Http\Controllers\AnalisisJadwalController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\LaporanJadwalKontenController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 
 
 /*
@@ -53,9 +53,7 @@ Route::get('/notifications/mark-all-read', [NotificationController::class, 'mark
 Route::resource('/kategoris', KategoriController::class);
 Route::resource('/jadwal_kontens', JadwalKontenController::class);
 Route::resource('/file_kontens', FileKontenController::class);
-Route::resource('/analisis_jadwals', AnalisisJadwalController::class);
 Route::patch('/jadwal_kontens/{id}/status', [JadwalKontenController::class, 'updateStatus'])->name('jadwal_kontens.updateStatus');
-Route::patch('analisis_jadwals/{id}/update-status', [AnalisisJadwalController::class, 'updateStatus'])->name('analisis_jadwals.updateStatus');
 Route::get('/kalender-jadwal', [App\Http\Controllers\JadwalKontenController::class, 'kalender'])->name('jadwal_kontens.kalender');
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -68,43 +66,11 @@ Route::middleware('auth')->group(function () {
 });
 
 
+
+
 Route::get('/laporan/jadwal-konten', [LaporanJadwalKontenController::class, 'showForm'])->name('laporan.jadwal.view');
 Route::get('/laporan/jadwal-konten/export', [LaporanJadwalKontenController::class, 'exportExcel'])->name('laporan.jadwal.export');
 
 
-//Route input Data Create Read Update Delete @resource
-Route::resource('/balita' ,BalitaController::class);
-Route::resource('/orangtua' ,OrangTuaController::class);
-Route::resource('/penimbangan' ,PenimbanganController::class);
-Route::resource('/keuangan' ,KeuanganController::class);
-Route::resource('/imunisasi', ImunisasiController::class);
-Route::resource('petugas', PetugasController::class);
-Route::resource('bidans', BidanController::class);
 
-
-Route::get('/kms/{balita_id}', [\App\Http\Controllers\PenimbanganController::class, 'kms'])->name('penimbangan.kms');
-
-//filter Penimbangan
-Route::get('/filter/periodeTimbang',[PenimbanganController::class,'periodeTimbang']);
-
-//Route Bagian Keuangan
-Route::get('/kasmasuk',[KeuanganController::class,'kasmasuk']);
-Route::get('/kaskeluar',[KeuanganController::class,'kaskeluar']);
-Route::get('/filter/periode',[KeuanganController::class,'periode']);
-Route::get('/filter/periodeKasMasuk',[KeuanganController::class,'periodeKasMasuk']);
-Route::get('/filter/periodeKasKeluar',[KeuanganController::class,'periodeKasKeluar']);
-//Mencetak PDF Keuangan
-Route::get('/filter/cetakpdfmasuk' ,[KeuanganController::class,'pdfMasuk']);
-Route::get('/filter/cetakpdfkeluar' ,[KeuanganController::class,'pdfKeluar']);
-Route::get('/filter/cetakpdfrekap' ,[KeuanganController::class,'pdfRekap']);
-Route::get('/cetakrekap' ,[KeuanganController::class,'cetakRekap']);
-
-Route::resource('/blog' ,BlogController::class);
 Route::resource('/akun' ,AkunController::class);
-// Route::get('/',[JadwalKontenController::class,'welcome']);
-
-
-Route::resource('/gallery', GalleryController::class);
-
-
-Route::get('/febyy', [KeuanganController::class,'cobabalita']);

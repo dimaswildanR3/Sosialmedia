@@ -20,25 +20,37 @@ class ProfileController extends Controller
         return view('profile.edit', compact('user'));
     }
 
-    public function update(Request $request)
-    {
-        $user = Auth::user();
+   public function update(Request $request)
+{
+    $user = Auth::user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:8|confirmed'
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        'password' => 'nullable|min:8|confirmed',
+        'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
 
-        $user->name = $request->name;
-        $user->email = $request->email;
+    $user->name = $request->name;
+    $user->email = $request->email;
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    if ($request->hasFile('photo')) {
+        if ($user->photo && file_exists(storage_path('app/public/' . $user->photo))) {
+            unlink(storage_path('app/public/' . $user->photo));
         }
 
-        $user->save();
-
-        return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui!');
+        $path = $request->file('photo')->store('photo', 'public');
+        $user->photo = $path;
     }
+
+    $user->save();
+
+    return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui!');
+}
+
+
 }

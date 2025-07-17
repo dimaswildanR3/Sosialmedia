@@ -9,35 +9,24 @@
     </ol>
 </nav>
 
-@if(session('status'))
-    <div class="alert alert-success">{{ session('status') }}</div>
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 <div class="card shadow p-3 mb-5 bg-white rounded">
     <form action="{{ route('jadwal_kontens.update', $jadwal->id) }}" method="POST">
         @csrf
-        @method('patch')
+        @method('PATCH')
 
+        <!-- Judul Konten -->
         <div class="form-group mb-3">
             <label for="judul_konten">Judul Konten</label>
             <input type="text" name="judul_konten" class="form-control @error('judul_konten') is-invalid @enderror"
-                value="{{ old('judul_konten', $jadwal->judul_konten) }}">
+                   value="{{ old('judul_konten', $jadwal->judul_konten) }}">
             @error('judul_konten') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
-        <div class="form-group mb-3">
-            <label for="user_id">User</label>
-            <select name="user_id" class="form-control @error('user_id') is-invalid @enderror">
-                <option value="">-- Pilih User --</option>
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}" {{ old('user_id', $jadwal->user_id) == $user->id ? 'selected' : '' }}>
-                        {{ $user->name }}
-                    </option>
-                @endforeach
-            </select>
-            @error('user_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
-
+        <!-- Kategori -->
         <div class="form-group mb-3">
             <label for="kategori_id">Kategori</label>
             <select name="kategori_id" class="form-control @error('kategori_id') is-invalid @enderror">
@@ -51,32 +40,62 @@
             @error('kategori_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <!-- Tanggal & Waktu Postingan -->
         <div class="form-group mb-3">
-            <label for="tanggal_publikasi">Tanggal Publikasi</label>
-            <input type="datetime-local" name="tanggal_publikasi" class="form-control @error('tanggal_publikasi') is-invalid @enderror"
-value="{{ old('tanggal_publikasi', \Carbon\Carbon::parse($jadwal->tanggal_publikasi)->format('Y-m-d\TH:i')) }}">
-
-
-            @error('tanggal_publikasi') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            <label for="tanggal_postingan">Tanggal & Waktu Postingan</label>
+            <input type="datetime-local" name="tanggal_postingan" class="form-control @error('tanggal_postingan') is-invalid @enderror"
+                   value="{{ old('tanggal_postingan', \Carbon\Carbon::parse($jadwal->tanggal_postingan)->format('Y-m-d\TH:i')) }}">
+            @error('tanggal_postingan') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <!-- Caption (CKEditor) -->
         <div class="form-group mb-3">
-    <label for="platform">Platform</label>
-    <textarea name="platform" rows="4" class="form-control @error('platform') is-invalid @enderror">{{ old('platform', $jadwal->platform) }}</textarea>
-    @error('platform') <div class="invalid-feedback">{{ $message }}</div> @enderror
-</div>
+            <label for="caption">Caption</label>
+            <textarea id="caption" name="caption" rows="4" class="form-control @error('caption') is-invalid @enderror">{{ old('caption', $jadwal->caption) }}</textarea>
+            @error('caption') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
 
+        <!-- Akun Ditandai -->
+        <div class="form-group mb-3">
+            <label for="akun_ditandai">Akun Ditandai (Opsional)</label>
+            <input type="text" name="akun_ditandai" class="form-control" value="{{ old('akun_ditandai', $jadwal->akun_ditandai) }}">
+        </div>
+
+        <!-- Hashtag -->
+        <div class="form-group mb-3">
+            <label for="hastag">Hashtag (Opsional)</label>
+            <input type="text" name="hastag" class="form-control" value="{{ old('hastag', $jadwal->hastag) }}">
+        </div>
+
+        <!-- Tombol -->
         <button type="submit" class="btn btn-outline-success"><i class="fas fa-save"></i> Update</button>
         <a href="{{ route('jadwal_kontens.index') }}" class="btn btn-outline-secondary"><i class="fas fa-arrow-left"></i> Kembali</a>
     </form>
 </div>
+
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
 <script>
+    ClassicEditor
+        .create(document.querySelector('#caption'), {
+            toolbar: ['bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote']
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Set minimal waktu sekarang
     document.addEventListener("DOMContentLoaded", function () {
-        const tanggalInput = document.querySelector('input[name="tanggal_publikasi"]');
-        const today = new Date().toISOString().split('T')[0];
-        tanggalInput.setAttribute('min', today); // membatasi tanggal sebelum hari ini
+        const tanggalInput = document.querySelector('input[name="tanggal_postingan"]');
+        if (tanggalInput) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            tanggalInput.min = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
     });
 </script>
-
-
 @endsection

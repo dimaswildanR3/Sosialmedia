@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 class JadwalKonten extends Model
 {
     protected $fillable = [
-        'user_id',
+         'user_id',
         'kategori_id',
         'judul_konten',
-        'tanggal_publikasi',
+        'tanggal_postingan',
+        'caption',
+        'akun_ditandai',
+        'hastag',
         'status',
-        'waktu_di_buat',
-        'platform',
+        'waktu_dibuat'
     ];
 
     public function user()

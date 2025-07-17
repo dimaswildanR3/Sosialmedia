@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('jadwal_kontens', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade');
+            $table->foreignId('kategori_id')->constrained('kategoris')->onDelete('cascade'); 
             $table->string('judul_konten');
-            $table->datetime('tanggal_publikasi');
-            $table->enum('status', ['scheduled', 'published', 'failed'])->default('scheduled');
-            $table->datetime('waktu_di_buat');  // kolom tambahan
-            $table->timestamps();
+            $table->dateTime('tanggal_postingan'); 
+            $table->text('caption'); 
+            $table->string('akun_ditandai')->nullable(); 
+            $table->string('hastag')->nullable(); 
+            $table->enum('status', ['scheduled', 'published', 'failed'])->default('scheduled'); 
+            $table->dateTime('waktu_dibuat'); 
+            $table->timestamps(); 
         });
     }
 

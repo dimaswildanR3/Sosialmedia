@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" href="{{ asset('storage/images/logo.png') }}" type="image/png">
 
     <link href="assets/vendor/aos/aos.css" rel="stylesheet">
     <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
@@ -42,49 +43,223 @@
         border-left: 0.25rem solid #ff7ec9 !important; /*Warna untuk sisi kiri di semua menu dashboard back end*/
       }
       .notif-badge {
-    position: absolute;
-    top: -2px;
-    right: 0px;
-    background-color: red;
-    color: white;
-    font-size: 10px;
-    border-radius: 50%;
-    padding: 2px 6px;
-    z-index: 10;
-}
-
-
+        position: absolute;
+        top: -2px;
+        right: 0px;
+        background-color: red;
+        color: white;
+        font-size: 10px;
+        border-radius: 50%;
+        padding: 2px 6px;
+        z-index: 10;
+      }
+      
+      /* Search Bar Styles - Inline version */
+      .search-container-inline {
+        position: relative;
+        margin: 0 15px;
+      }
+      
+      .search-container-inline .search-form {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      
+      .search-container-inline .search-input {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+        padding: 6px 35px 6px 12px;
+        color: white;
+        font-size: 13px;
+        width: 200px;
+        transition: all 0.3s ease;
+      }
+      
+      .search-container-inline .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      
+      .search-container-inline .search-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.3);
+        border-color: #fd6bc5;
+        box-shadow: 0 0 0 2px rgba(253, 107, 197, 0.3);
+        width: 250px;
+      }
+      
+      .search-container-inline .search-btn {
+        position: absolute;
+        right: 3px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+      
+      .search-container-inline .search-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      
+      .search-container-inline .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        min-width: 250px;
+      }
+      
+      .search-result-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      
+      .search-result-item:hover {
+        background-color: #f8f9fa;
+      }
+      
+      .search-result-item:last-child {
+        border-bottom: none;
+      }
+      
+      .search-result-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+      }
+      
+      .search-result-description {
+        font-size: 12px;
+        color: #666;
+      }
+      
+      .search-result-category {
+        font-size: 10px;
+        color: #fd6bc5;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+      
+      /* Navbar Layout Fix */
+      .navbar-nav-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+      
+      .navbar-brand-wrapper {
+        flex-shrink: 0;
+      }
+      
+      .navbar-nav-right {
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+      
+      .navbar-nav-right .navbar-nav {
+        align-items: center;
+      }
+      
+      /* Responsive */
+      @media (max-width: 992px) {
+        .search-container-inline .search-input {
+          width: 150px;
+          font-size: 12px;
+        }
+        .search-container-inline .search-input:focus {
+          width: 180px;
+        }
+        .search-container-inline {
+          margin: 0 10px;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .search-container-inline {
+          display: none !important;
+        }
+      }
     </style>
-  </head>
-  <body>
-      <input type="checkbox" id="check">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-secondary" {{--style="background: #ff7ec9"--}}>
-        <div class="container-fluid">
-       <a href="/dashboard" class="navbar-brand" style="font-weight: bold; font-size: 1.5rem; color: #fd6bc5;margin-left: 30px;">
-    <i class="fas fa-share-alt" ></i> Sosial Media
-</a>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse  justify-content-end" id="navbarNavDropdown">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-                <label class="nav-link" for="check">
-                    <i class="fas fa-bars" id="sidebar_btn"></i>
-                </label>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white"><i class="fas fa-user" style="color: white"></i>
-                    {{ Auth::user()->name }}
-                </a>
-                
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <!--<a class="dropdown-item" href="{{ route('logout') }}">Profil</a>-->
-                    
-    <a class="dropdown-item" href="{{ route('profile.show') }}">
-        {{ __('Profil Saya') }}
+</head>
+<body>
+    <input type="checkbox" id="check">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+      <div class="container-fluid">
+        <div class="navbar-nav-wrapper">
+          <!-- Brand -->
+<div class="navbar-brand-wrapper">
+    <a href="/dashboard" class="navbar-brand" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
+        <img src="{{ asset('storage/images/logo.png') }}" alt="Logo" style="height: 50px; margin-right: 8px;">
+        <span style="font-weight: bold; font-size: 1.25rem; color: #fd6bc5;">Sosial Media</span>
     </a>
+</div>
+
+
+
+
+          <!-- Right Side Navigation -->
+          <div class="navbar-nav-right">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+              <ul class="navbar-nav ml-auto">
+                <!-- Mobile Search -->
+                <li class="nav-item d-md-none">
+                  <a class="nav-link" href="#" id="mobileSearchToggle">
+                    <i class="fas fa-search"></i>
+                  </a>
+                </li>
+                
+       <li class="nav-item" style="display: flex; align-items: center;">
+    <label class="nav-link" for="check" style="padding: 0; display: flex; align-items: center;">
+        <i class="fas fa-bars" id="sidebar_btn" style="font-size: 20px;"></i>
+    </label>
+</li>
+
+                
+                <!-- Search Bar - Desktop (di dalam navbar) -->
+                <li class="nav-item d-none d-md-block">
+                  <div class="search-container-inline">
+                    <form class="search-form" action="/search" method="GET">
+                      <input type="text" class="search-input" name="query" placeholder="Cari konten..." value="{{ request('query') }}" autocomplete="off" id="searchInput">
+                      <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                      </button>
+                      <div class="search-results" id="searchResults"></div>
+                    </form>
+                  </div>
+                </li>
+                
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
+                    <i class="fas fa-user" style="color: white"></i>
+                    {{ Auth::user()->name }}
+                  </a>
+                  
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <a class="dropdown-item" href="{{ route('profile.show') }}">
+                      {{ __('Profil Saya') }}
+                    </a>
                     <a class="dropdown-item" href="{{ route('logout') }}"
                     onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     {{ __('Log Out') }}
@@ -92,101 +267,80 @@
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                       @csrf
                     </form>
-                </div>
-            </li>
+                  </div>
+                </li>
 
-            @php
-    $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
-@endphp
+                @php
+                  $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
+                @endphp
 
-<li class="nav-item dropdown">
-    <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
-        <i class="fas fa-bell"></i>
-        @if($notifs->count() > 0)
-            <span class="notif-badge">{{ $notifs->count() }}</span>
-        @endif
-    </a>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
-        <h6 class="dropdown-header">Notifikasi</h6>
-        @forelse ($notifs as $notif)
-            <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap">
-                {{ $notif->message }}
-            </a>
-        @empty
-            <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
-        @endforelse
-        <div class="dropdown-divider"></div>
-        <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
-    </div>
-</li>
-
-
-          </ul>
+                <li class="nav-item dropdown">
+                  <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
+                    <i class="fas fa-bell"></i>
+                    @if($notifs->count() > 0)
+                      <span class="notif-badge">{{ $notifs->count() }}</span>
+                    @endif
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
+                    <h6 class="dropdown-header">Notifikasi</h6>
+                    @forelse ($notifs as $notif)
+                      <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap">
+                        {{ $notif->message }}
+                      </a>
+                    @empty
+                      <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
+                    @endforelse
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
-        
       </div>
-      </nav>
+    </nav>
+
+    <!-- Mobile Search Bar -->
+    <div class="mobile-search d-md-none" id="mobileSearch" style="display: none; background: #6c757d; padding: 15px; position: fixed; top: 56px; left: 0; right: 0; z-index: 999;">
+      <form action="/search" method="GET">
+        <div class="input-group">
+          <input type="text" class="form-control" name="query" placeholder="Cari konten, kategori, atau jadwal..." value="{{ request('query') }}">
+          <div class="input-group-append">
+            <button class="btn btn-outline-light" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
 
     <!--header area end-->
     <!--mobile navigation bar start-->
     <div class="mobile_nav">
       <div class="nav_bar">
-        <!-- <img src="https://badoystudio.com/wp-content/uploads/2018/05/usericon.png" class="mobile_profile_image" alt=""> -->
         <p style="font-size: 16px; color: white">Menu</p><i class="fa fa-list nav_btn"></i>
       </div>
       <div class="mobile_nav_items">
-        <a href="/dashboard"><i class="fas fa-desktop"></i><span>Dashboard</span></a>
-        <!-- <a href="/gallery"><i class="fas fa-image"></i><span>Galeri</span></a> -->
-        <a href="/balita"><i class="fas fa-baby-carriage"></i><span>Data Anak</span></a>
-     
-        <a href="/kategoris"><i class="fas fa-balance-scale"></i><span>Kategori</span></a>
-        <a href="/jadwal_kontens"><i class="fas fa-balance-scale"></i><span>Jadwal Konten</span><a>
+        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>     
+        <a href="/kategoris"><i class="fas fa-tags"></i><span>Kategori</span></a>
+        <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i><span>Jadwal Konten</span><a>
         <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
-
-        <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
-        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporanp</span></a>
-        <!-- <a class="dropdown-btn"><i class="fas fa-university"></i><span>Data Keuangan</span></a> -->
-        <!-- <div class="dropdown-container">
-          <a href="/kasmasuk"><i class="fas fa-plus-square"></i><span>Kas Masuk</span></a>
-          <a href="/kaskeluar"><i class="fas fa-minus-square"></i><span>Kas Keluar </span></a>
-          <a href="/keuangan"><i class="fas fa-sort-amount-up"></i><span>Rekapitulasi</span></a>
-          {{-- <a href="#">Link 1</a>
-          <a href="#">Link 2</a>
-          <a href="#">Link 3</a> --}}
-        </div> -->
-        <!-- <a href="/blog"><i class="fas fa-blog"></i><span>Data Jadwal Bidan</span></a> -->
+        <a href="/file_kontens"><i class="fas fa-file-alt"></i><span>File Kontens</span></a>
+        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
         <a href="/akun"><i class="fas fa-user"></i><span>User</span></a>
       </div>
     </div>
     <!--mobile navigation bar end-->
     <!--sidebar start-->
-    <div class="sidebar bg-dark">
-      {{-- <div class="profile_info">
-        <img src="https://badoystudio.com/wp-content/uploads/2018/05/usericon.png" class="profile_image" alt="">
-        <h4>Admin</h4>
-      </div> --}}
-      <a href="/dashboard"><i class="fas fa-desktop"></i><span>Dashboard</span></a>
-      <!-- <a href="/gallery"><i class="fas fa-image"></i><span>Galeri</span></a> -->
-
-      <a href="/kategoris"><i class="fas fa-balance-scale"></i><span>Kategori</span></a>
-        <a href="/jadwal_kontens"><i class="fas fa-balance-scale"></i><span>Jadwal Konten</span><a>
-        <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
-
-        <a href="/file_kontens"><i class="fas fa-balance-scale"></i><span>File Kontens</span></a>
-        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
-        
-      <!-- <a class="dropdown-btn" style="cursor: pointer;"><i class="fas fa-university"></i><span>Data Keuangan</span></a> -->
-      <div class="dropdown-container">
-        <a href="/kasmasuk"><i class="fas fa-plus-square"></i><span>Kas Masuk</span></a>
-        <a href="/kaskeluar"><i class="fas fa-minus-square"></i><span>Kas Keluar </span></a>
-        <a href="/keuangan"><i class="fas fa-sort-amount-up"></i><span>Rekapitulasi</span></a>
-        {{-- <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-        <a href="#">Link 3</a> --}}
-      </div>
-      <!-- <a href="/blog"><i class="fas fa-calendar"></i><span>Data Jadwal Bidan</span></a> -->
+    <div class="sidebar" style="background-color: #fd6bc5;">
+      <a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="/kategoris"><i class="fas fa-tags"></i><span>Kategori</span></a>
+      <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i><span>Jadwal Konten</span><a>
+      <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
+      <a href="/file_kontens"><i class="fas fa-file-alt"></i><span>File Kontens</span></a>
+      <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
       <a href="/akun"><i class="fas fa-user"></i><span>Pengguna</span></a>
-   
     </div>
     <!--sidebar end-->
 
@@ -195,11 +349,57 @@
     </div>
 
     <script type="text/javascript">
-    $(document).ready(function(){
-      $('.nav_btn').click(function(){
-        $('.mobile_nav_items').toggleClass('active');
-      });
+   $(document).ready(function() {
+    let searchTimeout;
+
+    $('#searchInput').on('input', function(){
+        clearTimeout(searchTimeout);
+        let query = $(this).val();
+
+        if(query.length >= 2) {
+            searchTimeout = setTimeout(function(){
+                $.ajax({
+                    url: '/search/ajax',
+                    type: 'GET',
+                    data: { query: query },
+                    success: function(response) {
+                        displaySearchResults(response);
+                    }
+                });
+            }, 300);
+        } else {
+            $('#searchResults').hide();
+        }
     });
+
+    // Hide results jika klik di luar
+    $(document).click(function(e) {
+        if (!$(e.target).closest('.search-container-inline').length) {
+            $('#searchResults').hide();
+        }
+    });
+
+    function displaySearchResults(results) {
+        let html = '';
+
+        if(results.length === 0) {
+            html = '<div class="search-result-item">Tidak ada hasil ditemukan</div>';
+        } else {
+            results.forEach(item => {
+                html += `
+                    <div class="search-result-item" onclick="window.location.href='${item.url}'">
+                        <div class="search-result-title">${item.title}</div>
+                        <div class="search-result-description">${item.description}</div>
+                        <div class="search-result-category">${item.category}</div>
+                    </div>
+                `;
+            });
+        }
+
+        $('#searchResults').html(html).show();
+    }
+});
+
     </script>
    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
    
@@ -237,4 +437,3 @@
    @yield('footer')
   </body>
 </html>
-                           

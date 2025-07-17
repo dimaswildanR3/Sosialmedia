@@ -5,133 +5,132 @@ namespace App\Http\Controllers;
 use App\Models\JadwalKonten;
 use App\Models\Kategori;
 use App\Models\Notification;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class JadwalKontenController extends Controller
 {
+    /**
+     * Tampilkan semua jadwal konten.
+     */
     public function index()
     {
-        $jadwals = JadwalKonten::with(['user', 'kategori'])->paginate(10);
+        $jadwals = JadwalKonten::with(['user', 'kategori'])->orderBy('tanggal_postingan', 'desc')->paginate(10);
         return view('jadwal_kontens.index', compact('jadwals'));
     }
 
+    /**
+     * Form tambah jadwal konten.
+     */
     public function create()
     {
         $kategoris = Kategori::all();
-        $users = User::all();
-
-        return view('jadwal_kontens.create', compact('kategoris', 'users'));
+        return view('jadwal_kontens.create', compact('kategoris'));
     }
 
+    /**
+     * Simpan jadwal konten baru.
+     */
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kategori_id' => 'required|exists:kategoris,id',
+            'kategori_id'        => 'required|exists:kategoris,id',
             'judul_konten' => 'required|string|max:255',
-            'tanggal_publikasi' => 'required|date|after_or_equal:today',
-            'platform' => 'nullable|string',
-            // status dihilangkan dari validasi karena ditentukan otomatis
+            'tanggal_postingan'  => 'required|date|after_or_equal:today',
+            'caption'            => 'required|string',
+            'akun_ditandai'      => 'nullable|string',
+            'hastag'             => 'nullable|string',
         ]);
-    
-        // Set nilai default untuk status dan waktu
-        $validated['status'] = 'scheduled';
-        $validated['waktu_di_buat'] = now();
-    
-        // Simpan ke database
-        JadwalKonten::create($validated);
+
+        $validated['user_id']      = auth()->id(); // Otomatis user login
+        $validated['status']       = 'scheduled';
+        $validated['waktu_dibuat'] = now();
+
+        $jadwal = JadwalKonten::create($validated);
+
+        // Buat notifikasi untuk user
         Notification::create([
-            'user_id' => $request->user_id,
-            'message' => 'Konten "' . $request->judul_konten . '" telah dijadwalkan.',
+            'user_id' => auth()->id(),
+            'message' => 'Konten telah dijadwalkan untuk tanggal ' . $jadwal->tanggal_postingan,
         ]);
-    
+
         return redirect()->route('jadwal_kontens.index')->with('success', 'Jadwal konten berhasil dibuat');
     }
-    
-    
 
+    /**
+     * Form edit jadwal konten.
+     */
     public function edit($id)
     {
         $jadwal = JadwalKonten::findOrFail($id);
         $kategoris = Kategori::all();
-        $users = User::all();
 
-        return view('jadwal_kontens.edit', compact('jadwal', 'kategoris', 'users'));
+        return view('jadwal_kontens.edit', compact('jadwal', 'kategoris'));
     }
 
+    /**
+     * Update data jadwal konten.
+     */
     public function update(Request $request, $id)
     {
         $jadwal = JadwalKonten::findOrFail($id);
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kategori_id' => 'required|exists:kategoris,id',
+            'kategori_id'        => 'required|exists:kategoris,id',
             'judul_konten' => 'required|string|max:255',
-            'tanggal_publikasi' => 'required|date',
-            'platform' => 'nullable',
-            // 'status' => 'required|in:scheduled,published,failed',
-            // 'waktu_di_buat' => 'required|date',
+            'tanggal_postingan'  => 'required|date',
+            'caption'            => 'required|string',
+            'akun_ditandai'      => 'nullable|string',
+            'hastag'             => 'nullable|string',
         ]);
 
         $jadwal->update($validated);
-        Notification::create([
-            'user_id' => $request->user_id,
-            'message' => 'Konten "' . $request->judul_konten . '" telah dijadwalkan.',
-        ]);
+
         return redirect()->route('jadwal_kontens.index')->with('success', 'Jadwal konten berhasil diperbarui');
     }
 
+    /**
+     * Hapus jadwal konten.
+     */
     public function destroy($id)
     {
-        $jadwal = JadwalKonten::findOrFail($id);
-        $jadwal->delete();
+        JadwalKonten::findOrFail($id)->delete();
 
         return redirect()->route('jadwal_kontens.index')->with('success', 'Jadwal konten berhasil dihapus');
     }
 
+    /**
+     * Update status (scheduled/published/failed)
+     */
     public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:scheduled,published,failed'
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|in:scheduled,published,failed'
+        ]);
 
-    $jadwal = JadwalKonten::findOrFail($id);
-    $jadwal->status = $request->status;
-    $jadwal->save();
+        $jadwal = JadwalKonten::findOrFail($id);
+        $jadwal->status = $request->status;
+        $jadwal->save();
 
-    return redirect()->route('jadwal_kontens.index')->with('success', 'Status berhasil diperbarui');
-}
+        return redirect()->route('jadwal_kontens.index')->with('success', 'Status berhasil diperbarui');
+    }
 
-public function welcome()
-{
-    // Ambil semua konten dengan status 'published' saja, termasuk relasi user, kategori, dan fileKontens
-    $jadwals = JadwalKonten::with(['user', 'kategori', 'fileKontens'])
-                ->where('status', 'published')
-                ->orderBy('tanggal_publikasi', 'desc')
-                ->get();
+    /**
+     * Tampilkan kalender jadwal konten.
+     */
+    public function kalender(Request $request)
+    {
+        $bulan = $request->get('bulan') ?? date('m');
+        $tahun = $request->get('tahun') ?? date('Y');
 
-    return view('welcome', compact('jadwals'));
-}
+        $startOfMonth = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth();
+        $endOfMonth = $startOfMonth->copy()->endOfMonth();
 
+        $jadwals = JadwalKonten::with('kategori')
+            ->whereBetween('tanggal_postingan', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->groupBy(fn ($item) => Carbon::parse($item->tanggal_postingan)->format('Y-m-d'));
 
-public function kalender(Request $request)
-{
-    $bulan = $request->get('bulan') ?? date('m');
-    $tahun = $request->get('tahun') ?? date('Y');
-
-    $startOfMonth = Carbon::createFromDate($tahun, $bulan, 1)->startOfMonth();
-    $endOfMonth = $startOfMonth->copy()->endOfMonth();
-
-    $jadwals = JadwalKonten::with('kategori')
-        ->whereBetween('tanggal_publikasi', [$startOfMonth, $endOfMonth])
-        ->get()
-        ->groupBy(fn ($item) => Carbon::parse($item->tanggal_publikasi)->format('Y-m-d'));
-
-    return view('jadwal_kontens.kalender', compact('jadwals', 'startOfMonth', 'bulan', 'tahun'));
-}
-
-
+        return view('jadwal_kontens.kalender', compact('jadwals', 'startOfMonth', 'bulan', 'tahun'));
+    }
 }

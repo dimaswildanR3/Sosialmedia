@@ -11,32 +11,61 @@ class LaporanJadwalKontenController extends Controller
 {
     public function exportExcel(Request $request)
     {
-        // Ambil data dengan relasi kategori
-        $jadwals = JadwalKonten::with('kategori')->get();
+        // Ambil filter tanggal dari request
+        $startDate = $request->start_date ? Carbon::parse($request->start_date)->startOfDay() : null;
+        $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : null;
 
-        // Rekap per bulan
+        // Query jadwal konten berdasarkan tanggal_postingan
+        $query = JadwalKonten::with('kategori', 'user');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tanggal_postingan', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->whereDate('tanggal_postingan', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('tanggal_postingan', '<=', $endDate);
+        }
+
+        $jadwals = $query->orderBy('tanggal_postingan', 'asc')->get();
+
+        // Rekap per bulan (tanggal_postingan)
         $byMonth = $jadwals->groupBy(function ($item) {
-            return Carbon::parse($item->tanggal_publikasi)->format('Y-m');
+            return Carbon::parse($item->tanggal_postingan)->translatedFormat('F Y');
         })->map->count();
 
-        // Susun array data
+        // Siapkan data array untuk Excel
         $data = [];
 
-        // Header
-        $data[] = ['Judul', 'Kategori', 'Tanggal Publikasi', 'Status', 'Platform'];
+        // Header kolom
+        $data[] = [
+            'No', 
+            'Judul Konten', 
+            'Kategori', 
+            'User', 
+            'Tanggal Postingan', 
+            'Caption', 
+            'Akun Ditandai', 
+            'Hashtag', 
+            'Status'
+        ];
 
-        // Data konten
+        // Isi data
+        $no = 1;
         foreach ($jadwals as $jadwal) {
             $data[] = [
+                $no++,
                 $jadwal->judul_konten,
                 $jadwal->kategori->nama_kategori ?? '-',
-                $jadwal->tanggal_publikasi,
-                ucfirst($jadwal->status),
-                $jadwal->platform ?? '-', // tambahkan kolom platform
+                $jadwal->user->name ?? '-',
+                Carbon::parse($jadwal->tanggal_postingan)->format('d-m-Y H:i'),
+                $jadwal->caption,
+                $jadwal->akun_ditandai ?? '-',
+                $jadwal->hastag ?? '-',
+                ucfirst($jadwal->status)
             ];
         }
 
-        // Spacer dan rekap bulanan
+        // Tambahkan rekap per bulan
         $data[] = [];
         $data[] = ['Rekapitulasi Total Postingan per Bulan'];
         $data[] = ['Bulan', 'Total Postingan'];
@@ -45,7 +74,7 @@ class LaporanJadwalKontenController extends Controller
             $data[] = [$bulan, $jumlah];
         }
 
-        // Ekspor ke Excel
+        // Download file Excel
         return Excel::download(
             new class($data) implements \Maatwebsite\Excel\Concerns\FromArray {
                 protected $data;
@@ -62,6 +91,6 @@ class LaporanJadwalKontenController extends Controller
 
     public function showForm()
     {
-        return view('laporan.jadwal_konten'); // Pastikan nama view sesuai
+        return view('laporan.jadwal_konten'); 
     }
 }
