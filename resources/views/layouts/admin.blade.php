@@ -41,6 +41,19 @@
       .border-left-primary {
         border-left: 0.25rem solid #ff7ec9 !important; /*Warna untuk sisi kiri di semua menu dashboard back end*/
       }
+      .notif-badge {
+    position: absolute;
+    top: -2px;
+    right: 0px;
+    background-color: red;
+    color: white;
+    font-size: 10px;
+    border-radius: 50%;
+    padding: 2px 6px;
+    z-index: 10;
+}
+
+
     </style>
   </head>
   <body>
@@ -80,6 +93,7 @@
             @php
     $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
 @endphp
+
 <li class="nav-item dropdown">
     <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
         <i class="fas fa-bell"></i>
@@ -90,7 +104,9 @@
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
         <h6 class="dropdown-header">Notifikasi</h6>
         @forelse ($notifs as $notif)
-            <a href="#" class="dropdown-item small text-wrap">{{ $notif->message }}</a>
+            <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap">
+                {{ $notif->message }}
+            </a>
         @empty
             <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
         @endforelse
@@ -98,6 +114,7 @@
         <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
     </div>
 </li>
+
 
           </ul>
         </div>

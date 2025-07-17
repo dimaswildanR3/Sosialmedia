@@ -39,9 +39,14 @@ Route::get('/', function () {
 Auth::routes();
 
 
+// Route::get('/notifications/read/{id}', [App\Http\Controllers\NotificationController::class, 'read'])->name('notifications.read');
+// Route::get('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+
+// Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+// Route::get('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+
+Route::get('/notifications/mark-read/{id}', [NotificationController::class, 'markRead'])->name('notifications.markRead');
 Route::get('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
-
-
 
 Route::resource('/kategoris', KategoriController::class);
 Route::resource('/jadwal_kontens', JadwalKontenController::class);
