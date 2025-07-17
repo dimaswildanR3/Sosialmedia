@@ -14,6 +14,11 @@ public function exportExcel(Request $request)
     // Query dengan relasi kategori & user
     $query = JadwalKonten::with(['kategori', 'user']);
 
+    // Filter data jika role user
+    if (auth()->user()->role === 'user') {
+        $query->where('user_id', auth()->id());
+    }
+
     if ($startDate && $endDate) {
         $query->whereBetween('tanggal_postingan', [$startDate, $endDate]);
     } elseif ($startDate) {
@@ -42,7 +47,7 @@ public function exportExcel(Request $request)
             $jadwal->kategori->nama_kategori ?? '-',
             $jadwal->user->name ?? '-',
             Carbon::parse($jadwal->tanggal_postingan)->format('d-m-Y H:i'),
-            $jadwal->caption,
+           trim(strip_tags($jadwal->caption))
             $jadwal->akun_ditandai ?? '-',
             $jadwal->hastag ?? '-',
             ucfirst($jadwal->status),
@@ -69,3 +74,4 @@ public function exportExcel(Request $request)
         }
     }, 'laporan_jadwal_konten.xlsx');
 }
+

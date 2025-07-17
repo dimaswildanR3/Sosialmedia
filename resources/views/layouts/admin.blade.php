@@ -197,151 +197,200 @@
           display: none !important;
         }
       }
+
+      .sidebar {
+  background-color: #fd6bc5;
+  width: 250px;
+  padding: 10px;
+}
+.sidebar a {
+  display: block;
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+}
+.dropdown-content {
+  display: none;
+  background-color: #fda7d0;
+  margin-left: 15px;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.mobile_nav_items {
+  transition: all 0.3s ease;
+  display: none;
+  background-color: #fd6bc5;
+  padding: 10px;
+}
+
+.mobile_nav_items.active {
+  display: block;
+}
+
     </style>
 </head>
 <body>
     <input type="checkbox" id="check">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
-      <div class="container-fluid">
-        <div class="navbar-nav-wrapper">
-          <!-- Brand -->
-<div class="navbar-brand-wrapper">
-    <a href="/dashboard" class="navbar-brand" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
-        <img src="{{ asset('storage/images/logo.png') }}" alt="Logo" style="height: 50px; margin-right: 8px;">
-        <span style="font-weight: bold; font-size: 1.25rem; color: #fd6bc5;">Sosial Media</span>
-    </a>
+  <!-- navbar utama -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+  <div class="container-fluid">
+    <div class="navbar-nav-wrapper">
+      <!-- Brand -->
+      <div class="navbar-brand-wrapper">
+        <a href="/dashboard" class="navbar-brand" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
+          <img src="{{ asset('storage/images/logo.png') }}" alt="Logo" style="height: 50px; margin-right: 8px;">
+          <span style="font-weight: bold; font-size: 1.25rem; color: #fd6bc5;">Sosial Media</span>
+        </a>
+      </div>
+
+      <!-- Right Side Navigation -->
+      <div class="navbar-nav-right">
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav ml-auto">
+            <!-- Desktop user dan notif seperti biasa -->
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
+                <i class="fas fa-user" style="color: white"></i> {{ Auth::user()->name }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{{ route('profile.show') }}">{{ __('Profil Saya') }}</a>
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                  onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log Out') }}</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+              </div>
+            </li>
+
+            @php
+              $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
+            @endphp
+
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
+                <i class="fas fa-bell"></i>
+                @if($notifs->count() > 0)
+                  <span class="notif-badge">{{ $notifs->count() }}</span>
+                @endif
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
+                <h6 class="dropdown-header">Notifikasi</h6>
+                @forelse ($notifs as $notif)
+                  <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap">{{ $notif->message }}</a>
+                @empty
+                  <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
+                @endforelse
+                <div class="dropdown-divider"></div>
+                <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
+              </div>
+            </li>
+
+            <!-- Tombol hamburger mobile, sembunyikan di desktop -->
+            <li class="nav-item d-lg-none" style="display: flex; align-items: center;">
+              <label class="nav-link" for="check" style="padding: 0; display: flex; align-items: center;">
+                <i class="fas fa-bars" id="sidebar_btn" style="font-size: 20px;"></i>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile navigation bar -->
+<div class="mobile_nav">
+  <div class="nav_bar" style="display: flex; align-items: center; justify-content: space-between; padding: 10 10px;">
+    <p style="font-size: 16px; color: white; margin: 0;">Menu</p>
+
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <!-- Notif Icon Mobile -->
+      <div style="position: relative;">
+        <a href="javascript:void(0)" id="notifToggleMobile" style="color: white; font-size: 20px;">
+          <i class="fas fa-bell"></i>
+          @if($notifs->count() > 0)
+            <span class="notif-badge" style="top: -5px; right: -8px; position: absolute;">{{ $notifs->count() }}</span>
+          @endif
+        </a>
+        <div id="notifDropdownMobile" style="display: none; position: absolute; right: 0; top: 28px; background: white; color: black; width: 280px; border-radius: 5px; max-height: 250px; overflow-y: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1050;">
+          <h6 class="dropdown-header" style="padding: 10px 15px; margin: 0; border-bottom: 1px solid #ddd;">Notifikasi</h6>
+          @forelse ($notifs as $notif)
+            <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap" style="padding: 8px 15px; display: block; color: #333;">{{ $notif->message }}</a>
+          @empty
+            <span class="dropdown-item text-muted" style="padding: 10px 15px;">Tidak ada notifikasi baru</span>
+          @endforelse
+          <div class="dropdown-divider"></div>
+          <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary" style="padding: 8px 15px;">Tandai semua telah dibaca</a>
+        </div>
+      </div>
+
+      <!-- User Icon Mobile -->
+      <div style="position: relative;">
+        <a href="javascript:void(0)" id="userToggleMobile" style="color: white; font-size: 20px;">
+          <i class="fas fa-user"></i>
+        </a>
+        <div id="userDropdownMobile" style="display: none; position: absolute; right: 0; top: 28px; background: white; color: black; width: 180px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 1050;">
+          <a href="{{ route('profile.show') }}" class="dropdown-item" style="padding: 8px 15px; display: block; color: #333;">Profil Saya</a>
+          <a href="{{ route('logout') }}" class="dropdown-item" style="padding: 8px 15px; display: block; color: #333;"
+             onclick="event.preventDefault();document.getElementById('logout-form-mobile').submit();">Log Out</a>
+          <form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+        </div>
+      </div>
+
+      <!-- Hamburger -->
+      <i class="fa fa-list nav_btn" style="color: white; font-size: 22px; cursor: pointer;"></i>
+    </div>
+  </div>
+
+  <div class="mobile_nav_items">
+  
+    <a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>  
+  @if(auth()->user()->role == 'admin')
+    <a href="/kategoris"><i class="fas fa-tags"></i><span>Kategori</span></a>
+    @endif  
+    <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i><span>Jadwal Konten</span></a>
+    <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
+    <a href="/file_kontens"><i class="fas fa-file-alt"></i><span>File Kontens</span></a>
+    <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chzart-line"></i><span>Laporan</span></a>
+    @if(auth()->user()->role == 'admin')
+    <a href="/akun"><i class="fas fa-user"></i><span>User</span></a>
+    @endif 
+  </div>
 </div>
 
-
-
-
-          <!-- Right Side Navigation -->
-          <div class="navbar-nav-right">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul class="navbar-nav ml-auto">
-                <!-- Mobile Search -->
-                <li class="nav-item d-md-none">
-                  <a class="nav-link" href="#" id="mobileSearchToggle">
-                    <i class="fas fa-search"></i>
-                  </a>
-                </li>
-                
-       <li class="nav-item" style="display: flex; align-items: center;">
-    <label class="nav-link" for="check" style="padding: 0; display: flex; align-items: center;">
-        <i class="fas fa-bars" id="sidebar_btn" style="font-size: 20px;"></i>
-    </label>
-</li>
-
-                
-                <!-- Search Bar - Desktop (di dalam navbar) -->
-                <li class="nav-item d-none d-md-block">
-                  <div class="search-container-inline">
-                    <form class="search-form" action="/search" method="GET">
-                      <input type="text" class="search-input" name="query" placeholder="Cari konten..." value="{{ request('query') }}" autocomplete="off" id="searchInput">
-                      <button type="submit" class="search-btn">
-                        <i class="fas fa-search"></i>
-                      </button>
-                      <div class="search-results" id="searchResults"></div>
-                    </form>
-                  </div>
-                </li>
-                
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
-                    <i class="fas fa-user" style="color: white"></i>
-                    {{ Auth::user()->name }}
-                  </a>
-                  
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="{{ route('profile.show') }}">
-                      {{ __('Profil Saya') }}
-                    </a>
-                    <a class="dropdown-item" href="{{ route('logout') }}"
-                    onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                    {{ __('Log Out') }}
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                      @csrf
-                    </form>
-                  </div>
-                </li>
-
-                @php
-                  $notifs = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->latest()->get();
-                @endphp
-
-                <li class="nav-item dropdown">
-                  <a class="nav-link position-relative" href="#" id="notifDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white">
-                    <i class="fas fa-bell"></i>
-                    @if($notifs->count() > 0)
-                      <span class="notif-badge">{{ $notifs->count() }}</span>
-                    @endif
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notifDropdown" style="width: 300px;">
-                    <h6 class="dropdown-header">Notifikasi</h6>
-                    @forelse ($notifs as $notif)
-                      <a href="{{ route('notifications.markRead', $notif->id) }}" class="dropdown-item small text-wrap">
-                        {{ $notif->message }}
-                      </a>
-                    @empty
-                      <span class="dropdown-item text-muted">Tidak ada notifikasi baru</span>
-                    @endforelse
-                    <div class="dropdown-divider"></div>
-                    <a href="{{ route('notifications.markAllRead') }}" class="dropdown-item text-center text-primary">Tandai semua telah dibaca</a>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Mobile Search Bar -->
-    <div class="mobile-search d-md-none" id="mobileSearch" style="display: none; background: #6c757d; padding: 15px; position: fixed; top: 56px; left: 0; right: 0; z-index: 999;">
-      <form action="/search" method="GET">
-        <div class="input-group">
-          <input type="text" class="form-control" name="query" placeholder="Cari konten, kategori, atau jadwal..." value="{{ request('query') }}">
-          <div class="input-group-append">
-            <button class="btn btn-outline-light" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <!--header area end-->
-    <!--mobile navigation bar start-->
-    <div class="mobile_nav">
-      <div class="nav_bar">
-        <p style="font-size: 16px; color: white">Menu</p><i class="fa fa-list nav_btn"></i>
-      </div>
-      <div class="mobile_nav_items">
-        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>     
-        <a href="/kategoris"><i class="fas fa-tags"></i><span>Kategori</span></a>
-        <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i><span>Jadwal Konten</span><a>
-        <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
-        <a href="/file_kontens"><i class="fas fa-file-alt"></i><span>File Kontens</span></a>
-        <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
-        <a href="/akun"><i class="fas fa-user"></i><span>User</span></a>
-      </div>
-    </div>
     <!--mobile navigation bar end-->
     <!--sidebar start-->
-    <div class="sidebar" style="background-color: #fd6bc5;">
-      <a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
-      <a href="/kategoris"><i class="fas fa-tags"></i><span>Kategori</span></a>
-      <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i><span>Jadwal Konten</span><a>
-      <a href="/kalender-jadwal"><i class="fas fa-calendar"></i><span>Kalender Jadwal</span></a>
-      <a href="/file_kontens"><i class="fas fa-file-alt"></i><span>File Kontens</span></a>
-      <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i><span>Laporan</span></a>
-      <a href="/akun"><i class="fas fa-user"></i><span>Pengguna</span></a>
+    <div class="sidebar">
+  <!-- Halaman Utama -->
+  <div class="dropdown">
+    <a href="/dashboard"><i class="fas fa-home"></i><span>Halaman Utama</span></a>
+    @if(auth()->user()->role == 'admin')
+    <div class="dropdown-content">
+      <a href="/akun"><i class="fas fa-user"></i> Pengguna</a>
     </div>
+    @endif 
+  </div>
+
+  <!-- Kalender -->
+  <div class="dropdown">
+    <a href="#"><i class="fas fa-calendar"></i><span>Konten</span></a>
+    <div class="dropdown-content">
+      <a href="/jadwal_kontens"><i class="fas fa-calendar-alt"></i> Jadwal Konten</a>
+      <a href="/kalender-jadwal"><i class="fas fa-calendar"></i> Kalender Jadwal</a>
+      @if(auth()->user()->role == 'admin')
+      <a href="/kategoris"><i class="fas fa-tags"></i> Kategori</a>
+      @endif 
+      <a href="/file_kontens"><i class="fas fa-file-alt"></i> File Kontens</a>
+    </div>
+  </div>
+
+  <!-- Analisis Postingan -->
+  <div class="dropdown">
+    <a href="#"><i class="fas fa-chart-line"></i><span>Analisis Postingan</span></a>
+    <div class="dropdown-content">
+      <a href="{{ route('laporan.jadwal.view') }}"><i class="fas fa-chart-line"></i> Laporan</a>
+    </div>
+  </div>
+</div>
     <!--sidebar end-->
 
     <div class="content">
@@ -434,6 +483,44 @@
         // startDate: '-3d'
     });
    </script>
+   <!-- <script>
+  $(document).ready(function(){
+    $('.nav_btn').click(function(){
+      $('.mobile_nav_items').toggleClass('active');
+    });
+  });
+</script> -->
+<script>
+  $(document).ready(function(){
+    $('#notifToggleMobile').on('click', function(e){
+      e.stopPropagation();
+      $('#notifDropdownMobile').toggle();
+      $('#userDropdownMobile').hide();
+    });
+
+    $('#userToggleMobile').on('click', function(e){
+      e.stopPropagation();
+      $('#userDropdownMobile').toggle();
+      $('#notifDropdownMobile').hide();
+    });
+
+    $('.nav_btn').on('click', function(){
+      $('.mobile_nav_items').toggleClass('active');
+    });
+
+    $(document).on('click', function(){
+      $('#notifDropdownMobile').hide();
+      $('#userDropdownMobile').hide();
+    });
+
+    $('#notifDropdownMobile, #userDropdownMobile').on('click', function(e){
+      e.stopPropagation();
+    });
+  });
+</script>
+
+
+
    @yield('footer')
   </body>
 </html>

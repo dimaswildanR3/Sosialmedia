@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+// use App\Models\Postingan;
+use App\Models\FileKonten;
 use App\Models\JadwalKonten;
+use App\Models\Kategori;
+use App\Models\User;
 use App\Models\Keuangan;
 use Illuminate\Http\Request;
 
@@ -20,7 +24,13 @@ class DashboardController extends Controller
         // $saldo = $jumlahMasuk - $jumlahKeluar;
         $balita = JadwalKonten::all();
         $jumlahBalita = count($balita);
-        return view('dashboard',compact('jumlahBalita'));
+        return view('dashboard', [
+            'jumlahPostingan' => JadwalKonten::count(),
+            'jumlahKategori' => Kategori::count(),
+            'jumlahUser' => User::count(),
+            'jumlahFileKonten' => FileKonten::count(),
+            'jumlahJadwalAktif' => JadwalKonten::where('status', 'aktif')->count(),
+        ]);
     }
 
     /**
